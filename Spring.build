@@ -170,10 +170,10 @@ Commandline Examples:
   <sysinfo failonerror="false" />
 
   <property name="project.company" value="SpringSource"/>
-  <property name="project.copyright" value="Copyright 2002-2012 Spring.NET Framework Team."/>
+  <property name="project.copyright" value="Copyright 2002-2018 Spring.NET Framework Team."/>
 
   <property name="key.file" value="Spring.Net.snk"/>
-  <property name="project.year" value="2010"/>
+  <property name="project.year" value="2018"/>
 
   <!-- Targets that are always executed -->
   <call target="set-build-configuration"/>
@@ -397,43 +397,6 @@ Commandline Examples:
 	  failonerror="true" />
   </target>
 
-  <target name="compile-build-3.5" description="Builds for .NET 3.5 if available">
-
-    <if test="${net-3.5.installed}">
-      <call target="compile-net-3.5"/>
-    </if>
-
-    <if test="${not net-3.5.installed}">
-      <if test="${property::exists('project.build.package') and project.build.package}">
-        .NET 3.5 Build Skipped for Package
-        <fail message="The .NET Framework 3.5 is not available."/>
-        <echo message="The .NET Framework 3.5 is not available. Build skipped during package."/>
-      </if>
-      <if test="${not(property::exists('project.build.package') and project.build.package)}">
-        <echo message="The .NET Framework 3.5 is not available. Build skipped."/>
-      </if>
-    </if>
-  </target>
-
-
-  <target name="compile-build-4.0" description="Builds for .NET 4.0 if available">
-
-    <if test="${net-4.0.installed}">
-      <call target="compile-net-4.0"/>
-    </if>
-
-    <if test="${not net-4.0.installed}">
-      <if test="${property::exists('project.build.package') and project.build.package}">
-        .NET 4.0 Build Skipped for Package
-        <fail message="The .NET Framework 4.0 is not available."/>
-        <echo message="The .NET Framework 4.0 is not available. Build skipped during package."/>
-      </if>
-      <if test="${not(property::exists('project.build.package') and project.build.package)}">
-        <echo message="The .NET Framework 4.0 is not available. Build skipped."/>
-      </if>
-    </if>
-  </target>
-
   <target name="compile-build-4.5" description="Builds for .NET 4.5 if available">
 
     <if test="${net-4.5.installed}">
@@ -452,38 +415,6 @@ Commandline Examples:
     </if>
   </target>
 
-
-  <!-- Targets for other .NET frameworks -->
-
-  <target name="compile-build-netcf-1.0" description="Builds for .NET 1.0 Compact Framework if available">
-    <if test="${framework::exists('netcf-1.0')}">
-      <call target="compile-netcf-1.0" />
-    </if>
-
-    <if test="${not framework::exists('netcf-1.0')}">
-      <if test="${property::exists('project.build.package') and project.build.package}">
-        <fail message="The .NET Compact Framework 1.0 is not available." />
-      </if>
-      <if test="${not(property::exists('project.build.package') and project.build.package)}">
-        <echo message="The .NET Compact Framework 1.0 is not available. Build skipped." />
-      </if>
-    </if>
-  </target>
-
-  <target name="compile-build-mono-2.0" description="Builds for mono 2.0 if available">
-     <if test="${framework::exists('mono-2.0')}">
-       <call target="compile-mono-2.0"/>
-     </if>
-     <if test="${not framework::exists('mono-2.0')}">
-         <if test="${property::exists('project.build.package') and project.build.package}">
-             <fail message="Mono 2.0 is not available."/>
-         </if>
-         <if test="${not(property::exists('project.build.package') and project.build.package)}">
-             <echo message="Mono 2.0 is not available. Build skipped."/>
-         </if>
-     </if>
-  </target>
-
   <target name="compile" description="Builds the current build configuration for the current target framework."
           depends="check-current-build-config">
     <call target="compile-${framework::get-target-framework()}"/>
@@ -491,29 +422,7 @@ Commandline Examples:
 
   <target name="compile-test"> <!-- used as configurable template by all compile-{net|mono|netcf}-x.x targets -->
     <property name="lib.dir" value="${spring.basedir}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}"/>
-    <property name="nh3.lib.dir" value="${nuget.packages.dir}/NHibernate/3.3.3.4001/lib/Net35"/>
-    <property name="iesi3.lib.dir" value="${nuget.packages.dir}/Iesi.Collections/3.3.3.4001/lib/Net35"/>
-    <property name="nh4.lib.dir" value="${nuget.packages.dir}/NHibernate/4.0.3.4000/lib/Net40"/>
-    <property name="iesi4.lib.dir" value="${nuget.packages.dir}/Iesi.Collections/4.0.1.4000/lib/Net40"/>
-    <property name="quartz2.lib.dir" value="${nuget.packages.dir}/Quartz/2.3.1/lib/net35"/>
-	<property name="nunit.lib.dir" value="${nuget.packages.dir}/NUnit/3.5.0/lib/net35"/>
 	
-	<property name="common.logging.lib.dir" value="${nuget.packages.dir}/Common.Logging/3.0.0/lib/net35"/>
-	<property name="common.logging.core.lib.dir" value="${nuget.packages.dir}/Common.Logging.Core/3.0.0/lib/net35"/>
-	
-	<!-- we use same libs for both 4.0 and 4.5 builds -->
-	<if test="${nant.settings.currentframework == 'net-4.0' or nant.settings.currentframework == 'net-4.5'}">
-		<property name="common.logging.lib.dir" value="${nuget.packages.dir}/Common.Logging/3.0.0/lib/net40"/>
-		<property name="common.logging.core.lib.dir" value="${nuget.packages.dir}/Common.Logging.Core/3.0.0/lib/net40"/>
-		<property name="lib.dir" value="${spring.basedir}/lib/net/4.0"/>
-		<property name="quartz2.lib.dir" value="${nuget.packages.dir}/Quartz/2.3.1/lib/net40"/>
-        <property name="nunit.lib.dir" value="${nuget.packages.dir}/NUnit/3.5.0/lib/net40"/>
-
-	</if>
-	
-
-	<call target="copylibtobin"/>
-
     <!-- build assemblies -->
     <nant buildfile="src/Spring/Spring.Core/Spring.Core.build" target="build" />
     <nant buildfile="src/Spring/Spring.Aop/Spring.Aop.build" target="build" if="${build-aop}"/>
@@ -761,42 +670,6 @@ Commandline Examples:
     <echo message="Compiling debug configuration for all runtime configurations."/>
     <property name="nant.target.root.name" value="build"/>
     <call target="build-all-function"/>
-  </target>
-
-  <target name="build-3.5">
-    <call target="set-build-namespaces-release"/>
-    <echo message="------------------------"/>
-    <echo message="Building .NET 3.5 DEBUG "/>
-    <echo message="------------------------"/>
-    <call target="set-debug-build-configuration"/>
-    <call target="compile-build-3.5"/>
-
-
-    <if test="${property::exists('project.build.package') and project.build.package}">
-      <echo message="--------------------------"/>
-      <echo message="Building .NET 3.5 RELEASE "/>
-      <echo message="--------------------------"/>
-      <call target="set-release-build-configuration"/>
-      <call target="compile-build-3.5"/>
-    </if>
-  </target>
-
-  <target name="build-4.0">
-    <call target="set-build-namespaces-release"/>
-    <echo message="------------------------"/>
-    <echo message="Building .NET 4.0 DEBUG "/>
-    <echo message="------------------------"/>
-    <call target="set-debug-build-configuration"/>
-    <call target="compile-build-4.0"/>
-
-
-    <if test="${property::exists('project.build.package') and project.build.package}">
-      <echo message="--------------------------"/>
-      <echo message="Building .NET 4.0 RELEASE "/>
-      <echo message="--------------------------"/>
-      <call target="set-release-build-configuration"/>
-      <call target="compile-build-4.0"/>
-    </if>
   </target>
   
   <target name="build-4.5">
@@ -1199,37 +1072,9 @@ Commandline Examples:
 
   <target name="build-all-function" description="Build what is in cvs taking into account approrpiate clr versions and root target name">
 
-    <call target="${nant.target.root.name}-3.5" />
-
-	<call target="${nant.target.root.name}-4.0" />
-	
 	<call target="${nant.target.root.name}-4.5" />
-
-    <!-- ignore Mono 2.0 -->
-    <!-- <call target="${nant.target.root.name}-mono-2.0" /> -->
-
-    <!-- build all Spring.NET solutions and example applications -->
-
     <call target="build-solutions" />
 
-  </target>
-
-  <target name="daily-build-3.5">
-    <call target="set-build-namespaces-all"/>
-    <call target="set-package-configuration"/>
-    <call target="set-debug-build-configuration"/>
-    <call target="compile-build-3.5"/>
-    <call target="set-release-build-configuration"/>
-    <call target="compile-build-3.5"/>
-  </target>
- 
-  <target name="daily-build-4.0">
-    <call target="set-build-namespaces-all"/>
-    <call target="set-package-configuration"/>
-    <call target="set-debug-build-configuration"/>
-    <call target="compile-build-4.0"/>
-    <call target="set-release-build-configuration"/>
-    <call target="compile-build-4.0"/>
   </target>
   
   <target name="daily-build-4.5">
@@ -1240,7 +1085,6 @@ Commandline Examples:
     <call target="set-release-build-configuration"/>
     <call target="compile-build-4.5"/>
   </target>
-  
 
   <!-- Target to use when packaging everything in CVS -->
   <target name="package-cvs" description="Build and Package distribution">
